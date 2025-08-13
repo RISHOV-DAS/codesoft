@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -9,6 +8,20 @@ datasource db {
 }
 
 model User{
-  id Int @id
-  name String 
+  id String @id @db.VarChar(40)
+  email String @unique @db.VarChar(50)
+  password String 
+}
+
+model Project{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  title String @db.VarChar(50)
+}
+
+model Task{
+  id Int @id @default(autoincrement())
+  assigned String @db.VarChar(20)
+  content String 
+  createdAt DateTime @default(now())
 }
