@@ -104,7 +104,8 @@ class Taskcontroller {
   };
 
   updateTaskStatus = async (req, res) => {
-    const { userID, projectID, taskID, status } = req.body;
+    const { userID, projectID, taskID } = req.params;
+    const { status } = req.body;
 
     if (!status) {
       return res.status(400).json({ msg: "Status is required" });

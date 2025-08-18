@@ -13,7 +13,10 @@ router.get(
   "/:userID/projects/:projectID/tasks/:taskID",
   taskController.getTaskById
 );
-router.put("/update-status", taskController.updateTaskStatus);
+router.put(
+  "/:userID/projects/:projectID/tasks/:taskID/status",
+  taskController.updateTaskStatus
+);
 router.put(
   "/:userID/projects/:projectID/tasks/:taskID/title",
   taskController.updateTaskTitle
