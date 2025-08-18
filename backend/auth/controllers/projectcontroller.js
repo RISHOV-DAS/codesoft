@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../utils/prisma.js";
 class Projectcontroller {
   createProject = async (req, res) => {
     const { userId, projectData } = req.body;
