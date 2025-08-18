@@ -126,5 +126,243 @@ class Projectcontroller {
         .json({ msg: "Error finding project", error: err.message });
     }
   };
+
+  updateProjectTitle = async (req, res) => {
+    const { userID, projectID } = req.params;
+    const { title } = req.body;
+
+    if (!title) return res.status(400).json({ msg: "Name is required" });
+
+    try {
+      const ProjectId = Number(projectID);
+      if (!projectID || Number.isNaN(ProjectId)) {
+        return res.status(400).json({ msg: "Valid projectID is required" });
+      }
+
+      const existingProject = await prisma.project.findFirst({
+        where: { id: ProjectId, userId: userID },
+      });
+      if (!existingProject) {
+        return res.status(404).json({ msg: "Project not found for this user" });
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: { id: ProjectId },
+        data: { title: title },
+        include: { task: true, user: { select: { id: true, email: true } } },
+      });
+
+      return res.status(200).json({
+        msg: "Project title updated successfully",
+        project: updatedProject,
+      });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ msg: "Error updating Project title", error: err.message });
+    }
+  };
+
+  updateProjectDescription = async (req, res) => {
+    const { userID, projectID } = req.params;
+    const { description } = req.body;
+
+    try {
+      const ProjectId = Number(projectID);
+      if (!projectID || Number.isNaN(ProjectId)) {
+        return res.status(400).json({ msg: "Valid projectID is required" });
+      }
+
+      const existingProject = await prisma.project.findFirst({
+        where: { id: ProjectId, userId: userID },
+      });
+      if (!existingProject) {
+        return res.status(404).json({ msg: "Project not found for this user" });
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: { id: ProjectId },
+        data: { description: description ?? null },
+        include: { task: true, user: { select: { id: true, email: true } } },
+      });
+
+      return res.status(200).json({
+        msg: "Project description updated successfully",
+        project: updatedProject,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        msg: "Error updating Project description",
+        error: err.message,
+      });
+    }
+  };
+
+  updateProjectStartDate = async (req, res) => {
+    const { userID, projectID } = req.params;
+    const { startDate } = req.body;
+
+    if (!startDate)
+      return res.status(400).json({ msg: "Start date is required" });
+
+    const newStartDate = new Date(startDate);
+    if (isNaN(newStartDate.getTime())) {
+      return res.status(400).json({ msg: "Invalid start date format" });
+    }
+
+    try {
+      const ProjectId = Number(projectID);
+      if (!projectID || Number.isNaN(ProjectId)) {
+        return res.status(400).json({ msg: "Valid projectID is required" });
+      }
+
+      const existingProject = await prisma.project.findFirst({
+        where: { id: ProjectId, userId: userID },
+      });
+      if (!existingProject) {
+        return res.status(404).json({ msg: "Project not found for this user" });
+      }
+
+      if (
+        existingProject.endDate &&
+        newStartDate >= new Date(existingProject.endDate)
+      ) {
+        return res
+          .status(400)
+          .json({ msg: "Start date must be before end date" });
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: { id: ProjectId },
+        data: { startDate: newStartDate },
+        include: { task: true, user: { select: { id: true, email: true } } },
+      });
+
+      return res.status(200).json({
+        msg: "Project start date updated successfully",
+        project: updatedProject,
+      });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ msg: "Error updating Project start date", error: err.message });
+    }
+  };
+
+  updateProjectEndDate = async (req, res) => {
+    const { userID, projectID } = req.params;
+    const { endDate } = req.body;
+
+    if (!endDate) return res.status(400).json({ msg: "End date is required" });
+
+    const newEndDate = new Date(endDate);
+    if (isNaN(newEndDate.getTime())) {
+      return res.status(400).json({ msg: "Invalid end date format" });
+    }
+
+    try {
+      const ProjectId = Number(projectID);
+      if (!projectID || Number.isNaN(ProjectId)) {
+        return res.status(400).json({ msg: "Valid projectID is required" });
+      }
+
+      const existingProject = await prisma.project.findFirst({
+        where: { id: ProjectId, userId: userID },
+      });
+      if (!existingProject) {
+        return res.status(404).json({ msg: "Project not found for this user" });
+      }
+
+      if (
+        existingProject.startDate &&
+        newEndDate <= new Date(existingProject.startDate)
+      ) {
+        return res
+          .status(400)
+          .json({ msg: "End date must be after start date" });
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: { id: ProjectId },
+        data: { endDate: newEndDate },
+        include: { task: true, user: { select: { id: true, email: true } } },
+      });
+
+      return res.status(200).json({
+        msg: "Project end date updated successfully",
+        project: updatedProject,
+      });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ msg: "Error updating Project end date", error: err.message });
+    }
+  };
+
+  updateStatus = async (req, res) => {
+    const { userID, projectID } = req.params;
+    const { status } = req.body;
+    if (!status) return res.status(400).json({ msg: "Status is required" });
+    const validStatuses = ["inprogress", "todo", "completed", "overdue"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        msg: "Invalid status. Must be one of: inprogress, todo, completed, overdue",
+      });
+    }
+
+    try {
+      const ProjectId = Number(projectID);
+      if (!projectID || Number.isNaN(ProjectId)) {
+        return res.status(400).json({ msg: "Valid projectID is required" });
+      }
+
+      const existingProject = await prisma.project.findFirst({
+        where: { id: ProjectId, userId: userID },
+      });
+      if (!existingProject) {
+        return res.status(404).json({ msg: "Project not found for this user" });
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: { id: ProjectId },
+        data: { status },
+        include: { task: true, user: { select: { id: true, email: true } } },
+      });
+
+      return res.status(200).json({
+        msg: "Project status updated successfully",
+        project: updatedProject,
+      });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ msg: "Error updating Project status", error: err.message });
+    }
+  };
+
+  deleteProject = async (req, res) => {
+    const { userID, projectID } = req.params;
+    try {
+      const ProjectId = Number(projectID);
+      if (!projectID || Number.isNaN(ProjectId)) {
+        return res.status(400).json({ msg: "Valid projectID is required" });
+      }
+
+      const existingProject = await prisma.project.findFirst({
+        where: { id: ProjectId, userId: userID },
+      });
+      if (!existingProject) {
+        return res.status(404).json({ msg: "Project not found for this user" });
+      }
+
+      await prisma.project.delete({ where: { id: ProjectId } });
+
+      return res.status(200).json({ msg: "Project deleted successfully" });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ msg: "Error deleting Project", error: err.message });
+    }
+  };
 }
 export default Projectcontroller;
