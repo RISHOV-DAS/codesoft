@@ -7,30 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id String @id @db.VarChar(40)
-  email String @unique @db.VarChar(50)
-  password String 
-  verified Boolean @default(false)
-  project Project[]
+enum Status {
+  inprogress
+  todo
+  completed
+  overdue
 }
 
-model Project{
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  title String @db.VarChar(50)
-  userId String
-  user User @relation(fields:[userId],references:[id],onDelete: Cascade)
-  task Task[]
+model User {
+  id       String    @id @db.VarChar(40)
+  email    String    @unique @db.VarChar(50)
+  password String
+  verified Boolean   @default(false)
+  project  Project[]
 }
 
-model Task{
-  id Int @id @default(autoincrement())
-  assignedTo String? @db.VarChar(20)
-  content String 
-  status String 
-  startDate DateTime @default(now())
-  endDate DateTime? 
-  projectId Int
-  project Project @relation(fields: [projectId],references: [id],onDelete: Cascade)
+model Project {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  title     String    @db.VarChar(50)
+  description String?
+  status    Status    @default(todo)
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task      Task[]
+}
+
+model Task {
+  id         Int       @id @default(autoincrement())
+  assignedTo String?   @db.VarChar(20)
+  content    String
+  status     Status    @default(todo)
+  startDate  DateTime  @default(now())
+  endDate    DateTime?
+  projectId  Int
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
