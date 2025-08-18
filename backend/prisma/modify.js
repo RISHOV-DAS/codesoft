@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 const prisma = new PrismaClient();
 
 export const addUser = async (user) => {
-  const createdUser = await prisma.User.create({
+  const createdUser = await prisma.user.create({
     data: {
       id: uuidv4(),
       email: user.email,
