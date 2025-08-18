@@ -3,15 +3,12 @@ import { v4 as uuidv4 } from "uuid";
 const prisma = new PrismaClient();
 
 export const addUser = async (user) => {
-  await prisma.User.create({
+  const createdUser = await prisma.User.create({
     data: {
       id: uuidv4(),
       email: user.email,
       password: user.password,
     },
   });
+  return createdUser;
 };
-
-addUser({}).then(() => {
-  prisma.$disconnect();
-});
