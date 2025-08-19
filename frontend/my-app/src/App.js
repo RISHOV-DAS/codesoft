@@ -5,8 +5,11 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 function Shell({ children }) {
+  const { token } = useAuth();
   return (
     <div className="app-shell">
       <div className="topbar">
@@ -17,9 +20,9 @@ function Shell({ children }) {
             <NavLink to="/" end>
               Home
             </NavLink>
-            <NavLink to="/auth">Auth</NavLink>
-            <NavLink to="/projects">Projects</NavLink>
-            <NavLink to="/tasks">Tasks</NavLink>
+            {!token && <NavLink to="/auth">Auth</NavLink>}
+            {token && <NavLink to="/projects">Projects</NavLink>}
+            {token && <NavLink to="/tasks">Tasks</NavLink>}
           </nav>
         </div>
       </div>
@@ -30,15 +33,31 @@ function Shell({ children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Shell>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/tasks" element={<Tasks />} />
-        </Routes>
-      </Shell>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Shell>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/projects"
+              element={
+                <ProtectedRoute>
+                  <Projects />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks"
+              element={
+                <ProtectedRoute>
+                  <Tasks />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Shell>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

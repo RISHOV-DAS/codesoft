@@ -1,12 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { loginUser, registerUser } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Auth() {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const { token, setToken, logout } = useAuth();
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/projects";
 
   async function submit(e) {
     e.preventDefault();
@@ -17,17 +22,16 @@ export default function Auth() {
       }
       const res = await loginUser({ email, password });
       if (res && res.token) {
-        localStorage.setItem("token", res.token);
         setToken(res.token);
+        navigate(from, { replace: true });
       }
     } catch (err) {
       setError(err.message || "Authentication failed");
     }
   }
 
-  function logout() {
-    localStorage.removeItem("token");
-    setToken("");
+  function handleLogout() {
+    logout();
   }
 
   return (
@@ -48,7 +52,13 @@ export default function Auth() {
                   {token}
                 </div>
               </div>
-              <button className="btn" onClick={logout}>
+              <button
+                className="btn"
+                onClick={() => {
+                  handleLogout();
+                  navigate("/");
+                }}
+              >
                 Logout
               </button>
             </div>
