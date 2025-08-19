@@ -6,8 +6,6 @@ const authController = new Authcontroller();
 
 //register
 router.post("/register", authController.register);
-//verify email
-router.get("/verify-email/:token", authController.verify_email);
 //login
 router.post("/login", authController.login);
 //get user
