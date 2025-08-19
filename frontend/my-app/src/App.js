@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import "./App.css";
+import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
+import Projects from "./pages/Projects";
+import Tasks from "./pages/Tasks";
 
-function App() {
+function Shell({ children }) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app-shell">
+      <div className="topbar">
+        <div className="inner">
+          <div className="brand">ProjectFlow</div>
+          <div className="spacer" />
+          <nav className="nav">
+            <NavLink to="/" end>
+              Home
+            </NavLink>
+            <NavLink to="/auth">Auth</NavLink>
+            <NavLink to="/projects">Projects</NavLink>
+            <NavLink to="/tasks">Tasks</NavLink>
+          </nav>
+        </div>
+      </div>
+      <div className="content">{children}</div>
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Shell>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/tasks" element={<Tasks />} />
+        </Routes>
+      </Shell>
+    </BrowserRouter>
+  );
+}

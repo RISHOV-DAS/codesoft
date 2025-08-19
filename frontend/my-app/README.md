@@ -1,3 +1,33 @@
+# ProjectFlow Frontend
+
+Light, professional React UI with authentication, projects dashboard, and kanban tasks, plus optional Gemini AI suggestions.
+
+## Scripts
+
+- `npm start` - run dev server
+- `npm run build` - build
+
+## Env
+
+Create `.env.local` in `frontend/my-app`:
+
+```
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_GEMINI_API_KEY=your_gemini_key
+```
+
+## Pages
+
+- Landing: overview widgets
+- Auth: register/login to backend
+- Projects: list and create projects; AI project title suggestions
+- Tasks: kanban for a project; AI task title suggestions
+
+## Notes
+
+- API endpoints match backend README paths.
+- Set a real `userId` and `projectId` to match your database.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
